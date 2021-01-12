@@ -1,0 +1,44 @@
+<?php
+
+/**
+* Implementation of hook_form_FORM_ID_alter().
+*/
+
+function custom_module_form_system_site_information_settings_alter(&$form, $form_state, $form_id) 
+{
+	// Add Site API Key field to 'Site Information' form
+    $system_variable = \Drupal::config('siteapikey.configuration')->get('siteapikey');
+    $form['site_information']['siteapikey'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Site API Key'),
+        '#default_value' => $system_variable ? : 'No API Key yet',
+        '#description' => t('Custom field to add site api key.'),
+    );
+
+    // Change form submit button text from "Save configuration" to 'Update Configuration'
+    $form['actions']['submit']['#value'] = t('Update Configuration');
+
+    // Handle the form submission - custom handler
+    $form['#submit'][] = 'custom_module_handler';
+}
+
+/**
+* Implementation of custom_module_handler().
+*/
+
+function custom_module_handler($form, &$form_state)
+{
+    // Update the system variable Site API Key
+    $config = \Drupal::configFactory()->getEditable('siteapikey.configuration');
+    // Get Site API field value
+    $new_modulename = $form_state->getValue(['siteapikey']);
+    if (empty($new_modulename)) {
+    	$new_modulename = 'No API Key yet';
+    }
+    // Set new value entered by user
+    $config->set('siteapikey', $new_modulename);
+    $config->save();
+
+    // Add message that Site API Key has been set
+    drupal_set_message("Site API Key has been saved with value " . $new_modulename);
+}
