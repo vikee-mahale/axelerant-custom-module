@@ -1,9 +1,0 @@
-# URL that responds with a JSON representation of a given node
-custom_module.jsonrepresentation:
-  path: '/page_json/{siteapikey}/{nid}'
-  defaults:
-    _controller: '\Drupal\custom_module\Controller\JsonRepresentationController::jsonrepresentation'
-    _title: 'JSON Representation'
-  requirements: 
-    #_permission: 'access content'
-    _role: 'authenticated'
